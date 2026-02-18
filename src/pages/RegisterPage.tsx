@@ -132,129 +132,132 @@ export const RegisterPage = () => {
                                 />
                             </div>
                         </div>
-                        <div className="mt-1 relative">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <Store className="h-5 w-5 text-gray-400" />
+                        {formData.role === 'seller' && (
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">Shop Name</label>
+                                <div className="mt-1 relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <Store className="h-5 w-5 text-gray-400" />
+                                    </div>
+                                    <input
+                                        name="shopName"
+                                        type="text"
+                                        required
+                                        className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-gray-50 focus:bg-white"
+                                        placeholder="My Super Store"
+                                        // @ts-ignore
+                                        value={formData.shopName || ''}
+                                        onChange={handleChange}
+                                    />
+                                </div>
                             </div>
-                            <input
-                                name="shopName"
-                                type="text"
-                                required
-                                className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-gray-50 focus:bg-white"
-                                placeholder="My Super Store"
-                                // @ts-ignore
-                                value={formData.shopName || ''}
-                                onChange={handleChange}
-                            />
-                        </div>
-                </div>
-                )}
-
-                <div>
-                    <label className="block text-sm font-medium text-gray-700">Email address</label>
-                    <div className="mt-1 relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <Mail className="h-5 w-5 text-gray-400" />
-                        </div>
-                        <input
-                            name="email"
-                            type="email"
-                            required
-                            className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-gray-50 focus:bg-white"
-                            placeholder="you@example.com"
-                            value={formData.email}
-                            onChange={handleChange}
-                        />
-                    </div>
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-gray-700">Phone Member</label>
-                    <div className="mt-1 relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <Phone className="h-5 w-5 text-gray-400" />
-                        </div>
-                        <input
-                            name="phone"
-                            type="tel"
-                            required
-                            className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-gray-50 focus:bg-white"
-                            placeholder="+91 98765 43210"
-                            value={formData.phone}
-                            onChange={handleChange}
-                        />
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Password</label>
-                        <div className="mt-1 relative">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <Lock className="h-5 w-5 text-gray-400" />
-                            </div>
-                            <input
-                                name="password"
-                                type="password"
-                                required
-                                className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-gray-50 focus:bg-white"
-                                placeholder="••••••••"
-                                value={formData.password}
-                                onChange={handleChange}
-                            />
-                        </div>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Confirm</label>
-                        <div className="mt-1 relative">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <Lock className="h-5 w-5 text-gray-400" />
-                            </div>
-                            <input
-                                name="confirmPassword"
-                                type="password"
-                                required
-                                className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-gray-50 focus:bg-white"
-                                placeholder="••••••••"
-                                value={formData.confirmPassword}
-                                onChange={handleChange}
-                            />
-                        </div>
-                    </div>
-                </div>
-
-                <div className="pt-2">
-                    <button
-                        type="submit"
-                        disabled={isLoading}
-                        className={`w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all ${isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:shadow-lg hover:shadow-primary/30'}`}
-                    >
-                        {isLoading ? (
-                            <>
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                                Creating Account...
-                            </>
-                        ) : (
-                            <>
-                                Get Started <ArrowRight className="h-4 w-4" />
-                            </>
                         )}
-                    </button>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Email address</label>
+                            <div className="mt-1 relative">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <Mail className="h-5 w-5 text-gray-400" />
+                                </div>
+                                <input
+                                    name="email"
+                                    type="email"
+                                    required
+                                    className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-gray-50 focus:bg-white"
+                                    placeholder="you@example.com"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Phone Member</label>
+                            <div className="mt-1 relative">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <Phone className="h-5 w-5 text-gray-400" />
+                                </div>
+                                <input
+                                    name="phone"
+                                    type="tel"
+                                    required
+                                    className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-gray-50 focus:bg-white"
+                                    placeholder="+91 98765 43210"
+                                    value={formData.phone}
+                                    onChange={handleChange}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">Password</label>
+                                <div className="mt-1 relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <Lock className="h-5 w-5 text-gray-400" />
+                                    </div>
+                                    <input
+                                        name="password"
+                                        type="password"
+                                        required
+                                        className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-gray-50 focus:bg-white"
+                                        placeholder="••••••••"
+                                        value={formData.password}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">Confirm</label>
+                                <div className="mt-1 relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <Lock className="h-5 w-5 text-gray-400" />
+                                    </div>
+                                    <input
+                                        name="confirmPassword"
+                                        type="password"
+                                        required
+                                        className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-gray-50 focus:bg-white"
+                                        placeholder="••••••••"
+                                        value={formData.confirmPassword}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="pt-2">
+                            <button
+                                type="submit"
+                                disabled={isLoading}
+                                className={`w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all ${isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:shadow-lg hover:shadow-primary/30'}`}
+                            >
+                                {isLoading ? (
+                                    <>
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                        Creating Account...
+                                    </>
+                                ) : (
+                                    <>
+                                        Get Started <ArrowRight className="h-4 w-4" />
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </form>
+
+                    <p className="mt-6 text-center text-xs text-gray-500">
+                        By signing up, you agree to our{' '}
+                        <a href="#" className="font-medium text-gray-900 hover:underline">Terms of Service</a>{' '}
+                        and{' '}
+                        <a href="#" className="font-medium text-gray-900 hover:underline">Privacy Policy</a>.
+                    </p>
                 </div>
-            </form>
+            </div>
 
-            <p className="mt-6 text-center text-xs text-gray-500">
-                By signing up, you agree to our{' '}
-                <a href="#" className="font-medium text-gray-900 hover:underline">Terms of Service</a>{' '}
-                and{' '}
-                <a href="#" className="font-medium text-gray-900 hover:underline">Privacy Policy</a>.
-            </p>
-        </div>
-            </div >
-
-    {/* Left Side (on large screens) - Image */ }
-    < div className = "hidden lg:block lg:w-1/2 relative bg-gray-900 order-first lg:order-last" >
+            {/* Left Side (on large screens) - Image */}
+            <div className="hidden lg:block lg:w-1/2 relative bg-gray-900 order-first lg:order-last">
                 <div className="absolute inset-0 bg-gradient-to-bl from-primary/40 to-black/60 z-10" />
                 <img
                     className="absolute inset-0 h-full w-full object-cover opacity-80"
@@ -267,7 +270,7 @@ export const RegisterPage = () => {
                         Whether you're buying, selling, or delivering, Vemgal Mart connects you to your community.
                     </p>
                 </div>
-            </div >
-        </div >
+            </div>
+        </div>
     );
 };
