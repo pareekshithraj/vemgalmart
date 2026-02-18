@@ -132,6 +132,7 @@ export const RegisterPage = () => {
                                 />
                             </div>
                         </div>
+
                         {formData.role === 'seller' && (
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">Shop Name</label>

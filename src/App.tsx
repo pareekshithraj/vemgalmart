@@ -19,8 +19,11 @@ import { ToastProvider } from './context/ToastContext';
 import { useEffect } from 'react';
 import { useStore } from './store/useStore';
 
+import { useServerWakeup } from './hooks/useServerWakeup';
+
 function App() {
   const { fetchProducts, fetchCart, fetchBanners } = useStore();
+  useServerWakeup();
 
   useEffect(() => {
     // Initialize app data
