@@ -1,0 +1,189 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 1. User System
+enum Role {
+  CUSTOMER
+  SELLER
+  DELIVERY_PARTNER
+  ADMIN
+}
+
+enum UserStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SUSPENDED
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  phone     String?   @unique
+  password  String
+  shopName  String?  // Added for sellers to display store name
+  role      Role     @default(CUSTOMER)
+  status    UserStatus @default(APPROVED) // Customers are auto-approved
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  addresses Address[]
+  orders    Order[]
+  cart      Cart?
+  products  Product[] // For sellers
+}
+
+model Address {
+  id             String   @id @default(uuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  street         String
+  city           String
+  state          String
+  pincode        String
+  village        String   @default("") // Added village
+  phone          String   @default("") // Added phone
+  alternatePhone String?  // Added optional alternate phone
+  isDefault      Boolean  @default(false)
+  type           String   @default("home") // home/work
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  image       String
+  description String?
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Banner {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  imageUrl    String
+  ctaText     String?
+  ctaLink     String?
+  displayMode String   @default("default") // default, imageOnly
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// 2. Product System
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  price       Float
+  category    String // Storing category name for now to avoid breaking changes, can be migrated to relation
+  categoryId  String?
+  categoryRel Category? @relation(fields: [categoryId], references: [id])
+  image       String
+  brand       String?
+  isActive    Boolean  @default(true) // Soft delete
+  sellerId    String
+  seller      User     @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // New fields
+  stock         Int       @default(0)
+  originalPrice Float?
+  images        String[]
+
+  inventory   Inventory?
+  cartItems   CartItem[]
+  orderItems  OrderItem[]
+}
+
+// 3. Inventory System (Decoupled)
+model Inventory {
+  id          String   @id @default(uuid())
+  productId   String   @unique
+  product     Product  @relation(fields: [productId], references: [id])
+  quantity    Int      @default(0)
+  warehouseId String   @default("default") // Scalable
+  updatedAt   DateTime @updatedAt
+}
+
+// 4. Cart System
+model Cart {
+  id        String     @id @default(uuid())
+  userId    String     @unique
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model CartItem {
+  id        String   @id @default(uuid())
+  cartId    String
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  quantity  Int
+}
+
+// 5. Order System
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PREPARING
+  READY_FOR_PICKUP
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+}
+
+model Order {
+  id              String      @id @default(uuid())
+  userId          String
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  totalAmount     Float
+  status          OrderStatus @default(PENDING)
+  paymentStatus   String      @default("PENDING") // PENDING, PAID, FAILED
+  deliveryAddress String      // Snapshot of address to avoid mutation issues
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  deliveryManId   String?     // Assigned delivery partner
+
+  items           OrderItem[]
+  payments        Payment[]
+}
+
+model OrderItem {
+  id              String   @id @default(uuid())
+  orderId         String
+  order           Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId       String
+  product         Product  @relation(fields: [productId], references: [id])
+  quantity        Int
+  priceAtPurchase Float    // Snapshot price
+}
+
+// 6. Payment System
+model Payment {
+  id            String   @id @default(uuid())
+  orderId       String
+  order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  amount        Float
+  method        String   // razorpay, cod, card
+  transactionId String?
+  status        String
+  createdAt     DateTime @default(now())
+}
