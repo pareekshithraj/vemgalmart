@@ -1,0 +1,24 @@
+
+> vemgal-mart@0.0.0 lint
+> eslint .
+
+
+C:\Users\paree\OneDrive\Desktop\Vemgal Mart\server\src\controllers\orderController.ts
+  9:41  error  'paymentMethod' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\paree\OneDrive\Desktop\Vemgal Mart\src\components\address\AddressFormModal.tsx
+  247:49  error  'key' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\paree\OneDrive\Desktop\Vemgal Mart\src\components\admin\AdminOverview.tsx
+  3:17  error  'ShoppingBag' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\paree\OneDrive\Desktop\Vemgal Mart\src\pages\CheckoutPage.tsx
+  128:60  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  159:58  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  163:76  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\paree\OneDrive\Desktop\Vemgal Mart\src\store\useStore.ts
+  108:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+✖ 7 problems (7 errors, 0 warnings)
+
