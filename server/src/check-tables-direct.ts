@@ -21,6 +21,7 @@ if (!connectionString) {
 }
 
 const pool = new Pool({ connectionString });
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const adapter = new PrismaNeon(pool as any);
 const prisma = new PrismaClient({ adapter });
 
@@ -30,6 +31,7 @@ async function main() {
         await prisma.$connect();
         console.log('✅ Connected!');
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const tables: any[] = await prisma.$queryRaw`
             SELECT table_name 
             FROM information_schema.tables 

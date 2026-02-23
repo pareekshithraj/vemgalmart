@@ -12,7 +12,8 @@ export const productService = {
                         shopName: true
                     }
                 },
-                inventory: true
+                inventory: true,
+                reviews: { select: { rating: true } }
             }
         });
     },
@@ -27,11 +28,13 @@ export const productService = {
                         name: true
                     }
                 },
-                inventory: true
+                inventory: true,
+                reviews: { select: { rating: true } }
             }
         });
     },
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async createProduct(data: any, sellerId: string) {
         return prisma.product.create({
             data: {
@@ -50,6 +53,7 @@ export const productService = {
         });
     },
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async updateProduct(id: string, data: any) {
         return prisma.product.update({
             where: { id },
@@ -78,7 +82,8 @@ export const productService = {
             include: {
                 seller: {
                     select: { id: true, name: true }
-                }
+                },
+                reviews: { select: { rating: true } }
             }
         });
     }

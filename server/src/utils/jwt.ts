@@ -6,10 +6,10 @@ export const generateToken = (userId: string, role: string): string => {
     return jwt.sign({ userId, role }, JWT_SECRET, { expiresIn: '7d' }); // Token valid for 7 days
 };
 
-export const verifyToken = (token: string): any => {
+export const verifyToken = (token: string): string | jwt.JwtPayload | null => {
     try {
         return jwt.verify(token, JWT_SECRET);
-    } catch (error) {
+    } catch {
         return null; // Invalid token
     }
 };

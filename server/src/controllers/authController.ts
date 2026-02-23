@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
 import prisma from '../utils/prisma';
-// import { UserStatus, Role } from '@prisma/client';
+import { Role } from '@prisma/client';
 import { hashPassword, comparePassword } from '../utils/password';
 import { generateToken } from '../utils/jwt';
 
 // Helper to map frontend role to backend enum
-const mapRoleToBackend = (role: string): any => {
+const mapRoleToBackend = (role: string): Role => {
     switch (role) {
         case 'buyer': return 'CUSTOMER';
         case 'seller': return 'SELLER';
@@ -15,7 +15,7 @@ const mapRoleToBackend = (role: string): any => {
 };
 
 // Helper to map backend enum to frontend role
-const mapRoleToFrontend = (role: any) => {
+const mapRoleToFrontend = (role: Role) => {
     switch (role) {
         case 'CUSTOMER': return 'buyer';
         case 'SELLER': return 'seller';
@@ -58,8 +58,8 @@ export const register = async (req: Request, res: Response) => {
                 password: hashedPassword,
                 shopName: role === 'seller' ? shopName : null,
                 role: mapRoleToBackend(role),
-                status: role === 'buyer' ? 'APPROVED' : 'APPROVED' // For demo simplicity, auto-approve all
-            } as any,
+                status: role === 'seller' ? 'PENDING' : 'APPROVED'
+            },
         });
 
         // Generate Token
@@ -67,7 +67,14 @@ export const register = async (req: Request, res: Response) => {
 
         res.status(201).json({
             message: 'User registered successfully',
-            user: { id: user.id, name: user.name, email: user.email, phone: user.phone, role: mapRoleToFrontend(user.role) },
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                phone: user.phone,
+                role: mapRoleToFrontend(user.role),
+                status: user.status
+            },
             token,
         });
     } catch (error) {
@@ -108,9 +115,9 @@ export const login = async (req: Request, res: Response) => {
         }
 
         // Check Status
-        // @ts-ignore
+
         const userStatus = user.status;
-        if (userStatus && userStatus !== 'APPROVED') {
+        if (userStatus && userStatus !== 'APPROVED' && user.role !== 'SELLER') {
             return res.status(403).json({
                 message: 'Your account is pending approval from the administrator.',
                 status: userStatus
@@ -122,7 +129,14 @@ export const login = async (req: Request, res: Response) => {
 
         res.status(200).json({
             message: 'Login successful',
-            user: { id: user.id, name: user.name, email: user.email, phone: user.phone, role: mapRoleToFrontend(user.role) },
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                phone: user.phone,
+                role: mapRoleToFrontend(user.role),
+                status: user.status
+            },
             token,
         });
     } catch (error) {

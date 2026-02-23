@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import { productService } from '../services/productService';
 
+
+
 export const getAllProducts = async (req: Request, res: Response) => {
     try {
         const { search } = req.query;
@@ -67,6 +69,7 @@ export const updateProduct = async (req: Request, res: Response) => {
         const id = req.params.id as string;
         const { name, description, price, category, image, images, stock, originalPrice, brand, isActive } = req.body;
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const productData: any = {
             name,
             description,

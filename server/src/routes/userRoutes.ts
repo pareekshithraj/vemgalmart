@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { authMiddleware } from '../middleware/auth';
-import { getProfile, updateProfile, addAddress, getAddresses, deleteAddress, updateAddress } from '../controllers/userController';
+import { getProfile, updateProfile, addAddress, getAddresses, deleteAddress, updateAddress, saveFcmToken } from '../controllers/userController';
 
 const router = Router();
 
@@ -12,5 +12,6 @@ router.post('/address', addAddress);
 router.get('/address', getAddresses);
 router.delete('/address/:id', deleteAddress);
 router.put('/address/:id', updateAddress);
+router.post('/fcm-token', saveFcmToken);
 
 export default router;

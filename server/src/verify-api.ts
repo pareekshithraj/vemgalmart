@@ -27,8 +27,12 @@ async function verify() {
         console.log('Token:', loginData.token.substring(0, 20) + '...');
 
         console.log('✨ All verifications passed!');
-    } catch (error: any) {
-        console.error('❌ Verification failed:', error.message);
+    } catch (error) {
+        if (error instanceof Error) {
+            console.error('❌ Verification failed:', error.message);
+        } else {
+            console.error('❌ Verification failed:', String(error));
+        }
     }
 }
 

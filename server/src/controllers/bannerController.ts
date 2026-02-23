@@ -8,7 +8,7 @@ export const getBanners = async (req: Request, res: Response) => {
             orderBy: { order: 'asc' }
         });
         res.json(banners);
-    } catch (error) {
+    } catch {
         res.status(500).json({ message: 'Error fetching banners' });
     }
 };
@@ -28,7 +28,7 @@ export const createBanner = async (req: Request, res: Response) => {
             }
         });
         res.status(201).json(banner);
-    } catch (error) {
+    } catch {
         res.status(500).json({ message: 'Error creating banner' });
     }
 };
@@ -42,7 +42,7 @@ export const updateBanner = async (req: Request, res: Response) => {
             data
         });
         res.json(banner);
-    } catch (error) {
+    } catch {
         res.status(500).json({ message: 'Error updating banner' });
     }
 };
@@ -52,7 +52,7 @@ export const deleteBanner = async (req: Request, res: Response) => {
         const { id } = req.params;
         await prisma.banner.delete({ where: { id: String(id) } });
         res.json({ message: 'Banner deleted successfully' });
-    } catch (error) {
+    } catch {
         res.status(500).json({ message: 'Error deleting banner' });
     }
 };

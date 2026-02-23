@@ -1,0 +1,146 @@
+[
+  {
+    "id": "65055548-145c-4e43-89fb-07d08e80e559",
+    "name": "Vegetables & Fruits",
+    "image": "https://images.unsplash.com/photo-1610832958506-aa56368176cf?auto=format&fit=crop&q=80&w=200",
+    "description": "Fresh farm produce",
+    "createdAt": "2026-02-17T05:41:13.150Z",
+    "updatedAt": "2026-02-17T05:41:13.150Z"
+  },
+  {
+    "id": "dc19db32-9244-4469-8006-bb1b7351de4c",
+    "name": "Dairy & Breakfast",
+    "image": "https://images.unsplash.com/photo-1628088062854-d1870b4553da?auto=format&fit=crop&q=80&w=200",
+    "description": "Milk, Bread, Eggs, Butter",
+    "createdAt": "2026-02-17T05:41:13.970Z",
+    "updatedAt": "2026-02-17T05:41:13.970Z"
+  },
+  {
+    "id": "d78e6ab7-d9f4-421c-aa45-f7c907815cca",
+    "name": "Atta, Rice & Dal",
+    "image": "https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=200",
+    "description": "Daily staples and grains",
+    "createdAt": "2026-02-17T05:41:14.421Z",
+    "updatedAt": "2026-02-17T05:41:14.421Z"
+  },
+  {
+    "id": "5c4f7832-fe26-4d76-ae45-a3e4242dbd61",
+    "name": "Meat, Fish & Eggs",
+    "image": "https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&q=80&w=200",
+    "description": "Fresh protein",
+    "createdAt": "2026-02-17T05:41:14.789Z",
+    "updatedAt": "2026-02-17T05:41:14.789Z"
+  },
+  {
+    "id": "c4f1d63e-520d-43c6-a28c-35b54cb1811c",
+    "name": "Masalas & Dry Fruits",
+    "image": "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&q=80&w=200",
+    "description": "Spices and nuts",
+    "createdAt": "2026-02-17T05:41:15.147Z",
+    "updatedAt": "2026-02-17T05:41:15.147Z"
+  },
+  {
+    "id": "035e818d-ad09-46b6-9bbf-2c55eb3ebf22",
+    "name": "Sauces & Spreads",
+    "image": "https://images.unsplash.com/photo-1620510625142-b45cbb784397?auto=format&fit=crop&q=80&w=200",
+    "description": "Jams, Ketcup, Sauces",
+    "createdAt": "2026-02-17T05:41:15.602Z",
+    "updatedAt": "2026-02-17T05:41:15.602Z"
+  },
+  {
+    "id": "300405e5-2a8d-48e9-a349-c6f56f51c7c0",
+    "name": "Instant & Frozen Food",
+    "image": "https://images.unsplash.com/photo-1585238342024-78d387f4a707?auto=format&fit=crop&q=80&w=200",
+    "description": "Noodles, Pasta, Frozen snacks",
+    "createdAt": "2026-02-17T05:41:16.345Z",
+    "updatedAt": "2026-02-17T05:41:16.345Z"
+  },
+  {
+    "id": "73ba3bf4-ca95-45a6-b8d3-d2a0beb376f2",
+    "name": "Cold Drinks & Juices",
+    "image": "https://images.unsplash.com/photo-1625772299848-391b6a87d7b3?auto=format&fit=crop&q=80&w=200",
+    "description": "Soft drinks and fruit juices",
+    "createdAt": "2026-02-17T05:41:17.112Z",
+    "updatedAt": "2026-02-17T05:41:17.112Z"
+  },
+  {
+    "id": "79bbcd21-63b6-4f17-b631-f540af9c6063",
+    "name": "Tea, Coffee & Health Drinks",
+    "image": "https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&q=80&w=200",
+    "description": "Beverages",
+    "createdAt": "2026-02-17T05:41:17.809Z",
+    "updatedAt": "2026-02-17T05:41:17.809Z"
+  },
+  {
+    "id": "9e300db7-3a81-472d-88db-4374433cf48c",
+    "name": "Ice Creams & Desserts",
+    "image": "https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?auto=format&fit=crop&q=80&w=200",
+    "description": "Sweet treats",
+    "createdAt": "2026-02-17T05:41:18.393Z",
+    "updatedAt": "2026-02-17T05:41:18.393Z"
+  },
+  {
+    "id": "e184f4ea-f2da-4c3b-88e5-9c4a3b1b3543",
+    "name": "Household Care",
+    "image": "https://images.unsplash.com/photo-1563453392212-326f5e854473?auto=format&fit=crop&q=80&w=200",
+    "description": "Cleaning and home essentials",
+    "createdAt": "2026-02-17T05:41:19.197Z",
+    "updatedAt": "2026-02-17T05:41:19.197Z"
+  },
+  {
+    "id": "5d9c51e2-a440-466a-8483-fd123bfeb972",
+    "name": "Personal Care",
+    "image": "https://images.unsplash.com/photo-1556228720-1987594b8e3a?auto=format&fit=crop&q=80&w=200",
+    "description": "Soaps, shampoos, skincare",
+    "createdAt": "2026-02-17T05:41:19.956Z",
+    "updatedAt": "2026-02-17T05:41:19.956Z"
+  },
+  {
+    "id": "59a3f88b-c9cd-4530-b8ee-cc93fa28d8b8",
+    "name": "Fresh Vegetables",
+    "image": "https://images.unsplash.com/photo-1597362925123-77861d3fbac7?q=80&w=2000&auto=format&fit=crop",
+    "description": "Farm fresh vegetables delivered daily.",
+    "createdAt": "2026-02-18T02:02:05.048Z",
+    "updatedAt": "2026-02-18T02:02:05.048Z"
+  },
+  {
+    "id": "27459234-4720-4d5a-8b44-c24fcfbfd08a",
+    "name": "Fresh Fruits",
+    "image": "https://images.unsplash.com/photo-1610832958506-aa56368176cf?q=80&w=2000&auto=format&fit=crop",
+    "description": "Juicy and seasonal fruits.",
+    "createdAt": "2026-02-18T02:02:07.273Z",
+    "updatedAt": "2026-02-18T02:02:07.273Z"
+  },
+  {
+    "id": "6ad9a315-98d5-4609-aaa1-277be84d4ece",
+    "name": "Rice, Atta & Dals",
+    "image": "https://images.unsplash.com/photo-1586201375761-83865001e31c?q=80&w=2000&auto=format&fit=crop",
+    "description": "Quality grains and pulses.",
+    "createdAt": "2026-02-18T02:02:09.434Z",
+    "updatedAt": "2026-02-18T02:02:09.434Z"
+  },
+  {
+    "id": "c0a37ccb-7a05-439c-878a-3d4e84c244bd",
+    "name": "Masalas & Spices",
+    "image": "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?q=80&w=2000&auto=format&fit=crop",
+    "description": "Authentic spices for your kitchen.",
+    "createdAt": "2026-02-18T02:02:09.996Z",
+    "updatedAt": "2026-02-18T02:02:09.996Z"
+  },
+  {
+    "id": "cb9834c5-b74e-4a9b-a8e7-8a8836857f1a",
+    "name": "Snacks & Biscuits",
+    "image": "https://images.unsplash.com/photo-1621939514649-280e2ee25f60?q=80&w=2000&auto=format&fit=crop",
+    "description": "Tasty treats for tea time.",
+    "createdAt": "2026-02-18T02:02:10.607Z",
+    "updatedAt": "2026-02-18T02:02:10.607Z"
+  },
+  {
+    "id": "3cdffe15-85db-41db-bee7-fa45c62a5a12",
+    "name": "Cleaning & Household",
+    "image": "https://images.unsplash.com/photo-1583947215259-38e31be8751f?q=80&w=2000&auto=format&fit=crop",
+    "description": "Essentials for a clean home.",
+    "createdAt": "2026-02-18T02:02:11.509Z",
+    "updatedAt": "2026-02-18T02:02:11.509Z"
+  }
+]

@@ -1,0 +1,41 @@
+Seeding products...
+Error seeding products: PrismaClientValidationError: 
+Invalid `prisma.product.create()` invocation in
+C:\Users\paree\OneDrive\Desktop\Vemgal Mart\server\src\seedProducts.ts:84:34
+
+  81 
+  82 for (const product of dummyProducts) {
+  83     const { categoryId, ...productData } = product;
+→ 84     await prisma.product.create({
+           data: {
+             name: "Fresh Red Apples",
+             description: "Crisp and sweet red apples, perfect for snacking or baking.",
+             price: 150,
+             originalPrice: 180,
+             stock: 50,
+             image: "https://images.unsplash.com/photo-1560806887-1e4cd0b6bcc6?w=500&q=80",
+             isAvailable: true,
+             ~~~~~~~~~~~
+             category: "veg-fruits",
+             categoryId: "veg-fruits",
+             sellerId: "be21dfb9-eeaf-423f-ad88-80c436d5bc88",
+         ?   id?: String,
+         ?   brand?: String | Null,
+         ?   isActive?: Boolean,
+         ?   createdAt?: DateTime,
+         ?   updatedAt?: DateTime,
+         ?   images?: ProductCreateimagesInput | String[],
+         ?   inventory?: InventoryUncheckedCreateNestedOneWithoutProductInput,
+         ?   cartItems?: CartItemUncheckedCreateNestedManyWithoutProductInput,
+         ?   orderItems?: OrderItemUncheckedCreateNestedManyWithoutProductInput
+           }
+         })
+
+Unknown argument `isAvailable`. Available options are marked with ?.
+    at xn (C:\Users\paree\OneDrive\Desktop\Vemgal Mart\server\node_modules\@prisma\client\runtime\library.js:29:1363)
+    at Bn.handleRequestError (C:\Users\paree\OneDrive\Desktop\Vemgal Mart\server\node_modules\@prisma\client\runtime\library.js:121:7005)
+    at Bn.handleAndLogRequestError (C:\Users\paree\OneDrive\Desktop\Vemgal Mart\server\node_modules\@prisma\client\runtime\library.js:121:6686)
+    at Bn.request (C:\Users\paree\OneDrive\Desktop\Vemgal Mart\server\node_modules\@prisma\client\runtime\library.js:121:6393)
+    at async l (C:\Users\paree\OneDrive\Desktop\Vemgal Mart\server\node_modules\@prisma\client\runtime\library.js:130:9645) {
+  clientVersion: '6.3.1'
+}

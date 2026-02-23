@@ -30,7 +30,7 @@ const categories = [
     },
     {
         name: 'Sauces & Spreads',
-        image: 'https://images.unsplash.com/photo-1620510625142-b45cbb784397?auto=format&fit=crop&q=80&w=200',
+        image: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&q=80&w=200',
         description: 'Jams, Ketcup, Sauces'
     },
     {
@@ -40,7 +40,7 @@ const categories = [
     },
     {
         name: 'Cold Drinks & Juices',
-        image: 'https://images.unsplash.com/photo-1625772299848-391b6a87d7b3?auto=format&fit=crop&q=80&w=200',
+        image: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&q=80&w=200',
         description: 'Soft drinks and fruit juices'
     },
     {
@@ -60,7 +60,7 @@ const categories = [
     },
     {
         name: 'Personal Care',
-        image: 'https://images.unsplash.com/photo-1556228720-1987594b8e3a?auto=format&fit=crop&q=80&w=200',
+        image: 'https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?auto=format&fit=crop&q=80&w=200',
         description: 'Soaps, shampoos, skincare'
     }
 ];
@@ -70,7 +70,7 @@ async function main() {
     for (const category of categories) {
         await prisma.category.upsert({
             where: { name: category.name },
-            update: {},
+            update: { image: category.image },
             create: category,
         });
     }

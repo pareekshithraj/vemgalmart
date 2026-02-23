@@ -15,6 +15,7 @@ async function main() {
             data: {
                 name: 'Test Setup User',
                 email,
+                phone: '1234567890',
                 password,
                 role: 'CUSTOMER'
             }

@@ -22,12 +22,14 @@ async function main() {
                 process.stdout.write(`Executing statement ${index + 1}... `);
                 await prisma.$executeRawUnsafe(sql);
                 console.log('✅');
-            } catch (err: any) {
+            } catch (err) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const message = (err as any).message;
                 // Ignore "already exists" errors to make it idempotent
-                if (err.message && (err.message.includes('already exists') || err.message.includes('Duplicate'))) {
+                if (message && (message.includes('already exists') || message.includes('Duplicate'))) {
                     console.log('⚠️  (Already exists)');
                 } else {
-                    console.error('\n❌ Failed:', err.message);
+                    console.error('\n❌ Failed:', message);
                     // Continue? Or throw? Let's verify at the end.
                 }
             }
@@ -36,6 +38,7 @@ async function main() {
         console.log('\nMigration execution finished.');
 
         // Verify by listing tables
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const result: any[] = await prisma.$queryRaw`
             SELECT table_name 
             FROM information_schema.tables 

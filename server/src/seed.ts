@@ -38,7 +38,7 @@ async function main() {
         },
         {
             name: 'Cold Drinks & Juices',
-            image: 'https://images.unsplash.com/photo-1625740822008-e45a8a9d68f5?q=80&w=2000&auto=format&fit=crop',
+            image: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?q=80&w=2000&auto=format&fit=crop',
             description: 'Refreshing beverages for summer.'
         },
         {
@@ -48,7 +48,7 @@ async function main() {
         },
         {
             name: 'Personal Care',
-            image: 'https://images.unsplash.com/photo-1556228720-1957be6a9024?q=80&w=2000&auto=format&fit=crop',
+            image: 'https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?q=80&w=2000&auto=format&fit=crop',
             description: 'Soaps, shampoos, and skincare.'
         }
     ];
@@ -56,7 +56,7 @@ async function main() {
     for (const cat of categories) {
         await prisma.category.upsert({
             where: { name: cat.name },
-            update: {},
+            update: { image: cat.image },
             create: cat
         });
     }

@@ -2,19 +2,19 @@ import { Request, Response } from 'express';
 import prisma from '../utils/prisma';
 // import { UserStatus, Role } from '@prisma/client'; // Avoid import if causing issues
 
-export const getPendingUsers = async (req: any, res: any) => {
+export const getPendingUsers = async (req: Request, res: Response) => {
     try {
         const users = await prisma.user.findMany({
             where: {
                 status: 'PENDING',
                 role: { in: ['SELLER', 'DELIVERY_PARTNER'] }
-            } as any,
+            },
             select: {
                 id: true,
                 name: true,
                 email: true,
                 role: true,
-                // @ts-ignore
+
                 status: true,
                 createdAt: true
             }
@@ -26,7 +26,7 @@ export const getPendingUsers = async (req: any, res: any) => {
     }
 };
 
-export const updateUserStatus = async (req: any, res: any) => {
+export const updateUserStatus = async (req: Request, res: Response) => {
     try {
         const { userId } = req.params;
         const { status } = req.body; // 'APPROVED' | 'REJECTED'
@@ -38,8 +38,8 @@ export const updateUserStatus = async (req: any, res: any) => {
         const newStatus = status; // Just use the string
 
         const user = await prisma.user.update({
-            where: { id: userId },
-            data: { status: newStatus } as any
+            where: { id: userId as string },
+            data: { status: newStatus }
         });
 
 
@@ -50,7 +50,7 @@ export const updateUserStatus = async (req: any, res: any) => {
     }
 };
 
-export const getDashboardStats = async (req: any, res: any) => {
+export const getDashboardStats = async (req: Request, res: Response) => {
     try {
         const totalUsers = await prisma.user.count();
         const totalProducts = await prisma.product.count();
@@ -69,7 +69,7 @@ export const getDashboardStats = async (req: any, res: any) => {
             totalProducts,
             totalOrders,
             totalRevenue: revenueAgg._sum.totalAmount || 0,
-            activeSellers: await prisma.user.count({ where: { role: 'SELLER', status: 'APPROVED' } as any })
+            activeSellers: await prisma.user.count({ where: { role: 'SELLER', status: 'APPROVED' } })
         });
     } catch (error) {
         console.error('Error fetching dashboard stats:', error);
@@ -77,7 +77,7 @@ export const getDashboardStats = async (req: any, res: any) => {
     }
 };
 
-export const getAllUsers = async (req: any, res: any) => {
+export const getAllUsers = async (req: Request, res: Response) => {
     try {
         const users = await prisma.user.findMany({
             orderBy: { createdAt: 'desc' },
@@ -86,7 +86,7 @@ export const getAllUsers = async (req: any, res: any) => {
                 name: true,
                 email: true,
                 role: true,
-                // @ts-ignore
+
                 status: true,
                 createdAt: true
             }

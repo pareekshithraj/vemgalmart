@@ -2,17 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { verifyToken } from '../utils/jwt';
 import prisma from '../utils/prisma';
 
-// Extend Express Request to include user
-declare global {
-    namespace Express {
-        interface Request {
-            user?: {
-                id: string;
-                role: string;
-            };
-        }
-    }
-}
+// Express Request type extended in src/types/custom.d.ts
 
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
@@ -24,7 +14,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
     const token = authHeader.split(' ')[1];
     const decoded = verifyToken(token);
 
-    if (!decoded) {
+    if (!decoded || typeof decoded === 'string') {
         return res.status(401).json({ message: 'Unauthorized: Invalid token' });
     }
 

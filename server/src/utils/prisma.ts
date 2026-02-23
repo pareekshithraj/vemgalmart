@@ -26,6 +26,7 @@ if (connectionString) {
 
 // Create Neon Pool
 const pool = new Pool({ connectionString: connectionString! });
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const adapter = new PrismaNeon(pool as any);
 
 // Initialize Prisma Client with adapter

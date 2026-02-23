@@ -84,5 +84,13 @@ export const userService = {
             where: { id: addressId },
             data
         });
+    },
+
+    // Save FCM Token
+    async saveFcmToken(userId: string, fcmToken: string) {
+        return prisma.user.update({
+            where: { id: userId },
+            data: { fcmToken }
+        });
     }
 };

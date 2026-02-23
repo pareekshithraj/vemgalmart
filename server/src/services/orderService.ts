@@ -1,8 +1,9 @@
 import prisma from '../utils/prisma';
+import { validateCouponLogic } from '../controllers/couponController';
 
 
 export const orderService = {
-    async createOrder(userId: string, deliveryAddress: string, items: { productId: string; quantity: number }[]) {
+    async createOrder(userId: string, deliveryAddress: string, items: { productId: string; quantity: number }[], couponCode?: string) {
         if (!items || items.length === 0) {
             throw new Error('Order must contain at least one item');
         }
@@ -40,6 +41,22 @@ export const orderService = {
         // ideally these should be config based
         totalAmount += 45;
 
+        let finalDiscountAmount = 0;
+        let appliedCouponCode: string | null = null;
+
+        if (couponCode) {
+            const validation = await validateCouponLogic(couponCode, totalAmount);
+            if (!validation.valid) {
+                throw new Error(validation.message || 'Invalid coupon');
+            }
+            finalDiscountAmount = validation.discountAmount || 0;
+            appliedCouponCode = couponCode.toUpperCase();
+            totalAmount -= finalDiscountAmount;
+
+            // Cannot have negative total
+            if (totalAmount < 0) totalAmount = 0;
+        }
+
         // 3. Create order and order items in a transaction
         return prisma.$transaction(async (tx) => {
             const order = await tx.order.create({
@@ -47,6 +64,8 @@ export const orderService = {
                     userId,
                     totalAmount,
                     deliveryAddress,
+                    couponCode: appliedCouponCode,
+                    discountAmount: finalDiscountAmount,
                     status: 'PENDING',
                     items: {
                         create: orderItemsData
@@ -58,6 +77,13 @@ export const orderService = {
                     }
                 }
             });
+
+            if (appliedCouponCode) {
+                await tx.coupon.update({
+                    where: { code: appliedCouponCode },
+                    data: { usedCount: { increment: 1 } }
+                });
+            }
 
             return order;
         });
@@ -93,10 +119,13 @@ export const orderService = {
         });
     },
 
-    async updateOrderStatus(orderId: string, status: any) {
+    async updateOrderStatus(orderId: string, status: import('@prisma/client').OrderStatus, proofOfDeliveryImage?: string) {
         return prisma.order.update({
             where: { id: orderId },
-            data: { status }
+            data: {
+                status,
+                ...(proofOfDeliveryImage && { proofOfDeliveryImage })
+            }
         });
     },
 

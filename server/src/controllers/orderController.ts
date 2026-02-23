@@ -1,10 +1,12 @@
 import { Request, Response } from 'express';
 import { orderService } from '../services/orderService';
+import { sendEmail, sendSMS, sendPushNotification } from '../services/notificationService';
+import prisma from '../utils/prisma';
 
 export const createOrder = async (req: Request, res: Response) => {
     try {
         if (!req.user) return res.status(401).json({ message: 'Unauthorized' });
-        const { deliveryAddress, items } = req.body;
+        const { deliveryAddress, items, couponCode } = req.body;
 
         if (!deliveryAddress) {
             return res.status(400).json({ message: 'Delivery address is required' });
@@ -14,16 +16,39 @@ export const createOrder = async (req: Request, res: Response) => {
             return res.status(400).json({ message: 'Items are required' });
         }
 
-        const order = await orderService.createOrder(req.user.id, deliveryAddress, items);
+        const order = await orderService.createOrder(req.user.id, deliveryAddress, items, couponCode);
+
+        // Send Notification
+        sendEmail(
+            req.user.email || '',
+            `Order Confirmation - Vemgal Mart #${order.id.slice(0, 8)}`,
+            `Hi ${req.user.name || 'Customer'},\n\nYour order has been placed successfully!\nOrder ID: ${order.id}\nTotal: ₹${order.totalAmount}\nDelivery Address: ${deliveryAddress}\n\nThank you for shopping with us!`
+        );
+
+        if (req.user.phone) {
+            sendSMS(req.user.phone, `Vemgal Mart: Your order #${order.id.slice(0, 8)} of ₹${order.totalAmount} is confirmed. Track it on the app!`);
+        }
+
+        // Fetch user from DB to check for fcmToken
+        const orderUser = await prisma.user.findUnique({ where: { id: req.user.id }, select: { fcmToken: true } });
+        if (orderUser?.fcmToken) {
+            sendPushNotification(
+                orderUser.fcmToken,
+                'Order Confirmed! 🎉',
+                `Your order #${order.id.slice(0, 8)} has been placed successfully.`,
+                { orderId: order.id }
+            );
+        }
 
         // Emit Socket Event
         const io = req.app.get('io');
         io.emit('new_order', order);
 
         res.status(201).json({ message: 'Order created successfully', order });
-    } catch (error: any) {
+    } catch (error) {
         console.error('Create Order Error:', error);
-        res.status(400).json({ message: error.message || 'Error creating order' });
+        const message = error instanceof Error ? error.message : 'Error creating order';
+        res.status(400).json({ message });
     }
 };
 
@@ -76,8 +101,39 @@ export const getOrderDetails = async (req: Request, res: Response) => {
 export const updateStatus = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const { status } = req.body;
-        const order = await orderService.updateOrderStatus(id as string, status);
+        const { status, proofOfDeliveryImage } = req.body;
+        const order = await orderService.updateOrderStatus(id as string, status, proofOfDeliveryImage);
+
+        const orderWithUser = await prisma.order.findUnique({
+            where: { id: id as string },
+            include: { user: { select: { name: true, phone: true, email: true, fcmToken: true } } }
+        });
+
+        if (orderWithUser && orderWithUser.user) {
+            const { name, phone, email, fcmToken } = orderWithUser.user;
+            let message = `Hi ${name}, your order #${id.slice(0, 8)} status is now: ${status.replace(/_/g, ' ')}.`;
+
+            if (status === 'OUT_FOR_DELIVERY') {
+                message = `Great news ${name}! Your Vemgal Mart order #${id.slice(0, 8)} is OUT FOR DELIVERY. Our partner will bring it shortly.`;
+            } else if (status === 'DELIVERED') {
+                message = `Yay! Your Vemgal Mart order #${id.slice(0, 8)} has been DELIVERED successfully. Enjoy!`;
+            }
+
+            // Send Notifications
+            sendEmail(email, `Order Status Update: ${status.replace(/_/g, ' ')}`, message);
+            if (phone) {
+                sendSMS(phone, message);
+            }
+
+            if (orderWithUser.user.fcmToken) {
+                sendPushNotification(
+                    orderWithUser.user.fcmToken,
+                    'Order Update 📦',
+                    message,
+                    { orderId: id as string, status }
+                );
+            }
+        }
 
         // Emit Socket Event
         const io = req.app.get('io');
