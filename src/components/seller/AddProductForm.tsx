@@ -65,7 +65,7 @@ export function AddProductForm() {
                 images: []
             });
             addToast('Product added successfully!', 'success');
-        } catch (error) {
+        } catch {
             addToast('Failed to add product. Please try again.', 'error');
         } finally {
             setIsLoading(false);

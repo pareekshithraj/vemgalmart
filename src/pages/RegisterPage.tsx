@@ -16,7 +16,8 @@ export const RegisterPage = () => {
         phone: '',
         password: '',
         confirmPassword: '',
-        role: 'buyer'
+        role: 'buyer',
+        shopName: ''
     });
     const [isLoading, setIsLoading] = useState(false);
 
@@ -47,7 +48,6 @@ export const RegisterPage = () => {
                 email: formData.email,
                 phone: formData.phone,
                 password: formData.password,
-                // @ts-ignore
                 shopName: formData.shopName,
                 role: formData.role
             });
@@ -61,8 +61,9 @@ export const RegisterPage = () => {
             else if (data.user.role === 'delivery_man') navigate('/delivery');
             else navigate('/');
 
-        } catch (error: any) {
-            addToast(error.response?.data?.message || error.message, 'error');
+        } catch (error) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            addToast((error as any).response?.data?.message || (error as any).message, 'error');
         } finally {
             setIsLoading(false);
         }
@@ -125,6 +126,7 @@ export const RegisterPage = () => {
                                     name="name"
                                     type="text"
                                     required
+                                    autoComplete="name"
                                     className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-gray-50 focus:bg-white"
                                     placeholder="John Doe"
                                     value={formData.name}
@@ -146,7 +148,6 @@ export const RegisterPage = () => {
                                         required
                                         className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-gray-50 focus:bg-white"
                                         placeholder="My Super Store"
-                                        // @ts-ignore
                                         value={formData.shopName || ''}
                                         onChange={handleChange}
                                     />
@@ -164,6 +165,7 @@ export const RegisterPage = () => {
                                     name="email"
                                     type="email"
                                     required
+                                    autoComplete="email"
                                     className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-gray-50 focus:bg-white"
                                     placeholder="you@example.com"
                                     value={formData.email}
@@ -173,7 +175,7 @@ export const RegisterPage = () => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">Phone Member</label>
+                            <label className="block text-sm font-medium text-gray-700">Phone Number</label>
                             <div className="mt-1 relative">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <Phone className="h-5 w-5 text-gray-400" />
@@ -182,6 +184,7 @@ export const RegisterPage = () => {
                                     name="phone"
                                     type="tel"
                                     required
+                                    autoComplete="tel"
                                     className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-gray-50 focus:bg-white"
                                     placeholder="+91 98765 43210"
                                     value={formData.phone}
@@ -201,6 +204,7 @@ export const RegisterPage = () => {
                                         name="password"
                                         type="password"
                                         required
+                                        autoComplete="new-password"
                                         className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-gray-50 focus:bg-white"
                                         placeholder="••••••••"
                                         value={formData.password}
@@ -219,6 +223,7 @@ export const RegisterPage = () => {
                                         name="confirmPassword"
                                         type="password"
                                         required
+                                        autoComplete="new-password"
                                         className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-gray-50 focus:bg-white"
                                         placeholder="••••••••"
                                         value={formData.confirmPassword}

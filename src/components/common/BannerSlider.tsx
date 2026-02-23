@@ -87,7 +87,7 @@ export function BannerSlider() {
 
     return (
         <div
-            className="relative h-[200px] sm:h-[350px] md:h-[450px] w-full overflow-hidden rounded-2xl md:rounded-3xl shadow-lg md:shadow-2xl group touch-pan-y"
+            className="relative h-[220px] sm:h-[350px] md:h-[450px] w-full overflow-hidden rounded-[28px] sm:rounded-[36px] md:rounded-[40px] shadow-xl md:shadow-2xl ring-1 ring-black/5 group touch-pan-y"
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
@@ -115,10 +115,10 @@ export function BannerSlider() {
                     {banner.displayMode !== 'imageOnly' && (
                         <div className="relative z-20 flex h-full flex-col justify-center px-6 sm:px-16 lg:max-w-3xl">
                             <div className={`transition-all duration-700 delay-100 ${index === currentIndex ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
-                                <h2 className="mb-2 md:mb-4 text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.1]">
+                                <h2 className="mb-2 md:mb-4 text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.1] drop-shadow-lg">
                                     {banner.title}
                                 </h2>
-                                <p className="mb-4 md:mb-8 text-sm sm:text-lg md:text-xl font-medium text-gray-200 lg:max-w-xl leading-relaxed line-clamp-2 md:line-clamp-none">
+                                <p className="mb-4 md:mb-8 text-sm sm:text-lg md:text-xl font-medium text-white/90 lg:max-w-xl leading-relaxed line-clamp-2 md:line-clamp-none drop-shadow-md">
                                     {banner.description}
                                 </p>
                                 <div className="flex gap-4">
@@ -156,12 +156,12 @@ export function BannerSlider() {
 
             {/* Dots */}
             {banners.length > 1 && (
-                <div className="absolute bottom-4 md:bottom-6 left-1/2 z-30 flex -translate-x-1/2 gap-2 md:gap-3">
+                <div className="absolute bottom-5 md:bottom-8 left-1/2 z-30 flex -translate-x-1/2 gap-2 md:gap-3 p-2 rounded-full bg-black/20 backdrop-blur-md border border-white/10">
                     {banners.map((_, index) => (
                         <button
                             key={index}
                             onClick={() => setCurrentIndex(index)}
-                            className={`h-2 md:h-2.5 rounded-full transition-all duration-300 ${index === currentIndex ? 'w-6 md:w-8 bg-white' : 'w-2 md:w-2.5 bg-white/40 hover:bg-white/60'
+                            className={`h-2 md:h-2.5 rounded-full transition-all duration-500 ease-out ${index === currentIndex ? 'w-8 md:w-10 bg-white shadow-[0_0_10px_rgba(255,255,255,0.8)]' : 'w-2 md:w-2.5 bg-white/40 hover:bg-white/60'
                                 }`}
                         />
                     ))}

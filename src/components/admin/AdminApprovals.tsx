@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useToast } from '../../context/ToastContext';
 import { Check, X, Loader2, User, Truck, Store } from 'lucide-react';
 import api from '../../lib/api';
@@ -18,17 +18,16 @@ export const AdminApprovals = () => {
     const [pendingUsers, setPendingUsers] = useState<PendingUser[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    const fetchPendingUsers = async () => {
+    const fetchPendingUsers = useCallback(async () => {
         try {
             const response = await api.get('/admin/pending-users');
             setPendingUsers(response.data);
-        } catch (error) {
-            console.error(error);
+        } catch {
             addToast('Error fetching pending users', 'error');
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [addToast]);
 
     const handleStatusUpdate = async (userId: string, status: 'APPROVED' | 'REJECTED') => {
         try {
@@ -36,14 +35,14 @@ export const AdminApprovals = () => {
 
             addToast(`User ${status.toLowerCase()} successfully`, 'success');
             setPendingUsers(prev => prev.filter(u => u.id !== userId));
-        } catch (error) {
+        } catch {
             addToast('Error updating status', 'error');
         }
     };
 
     useEffect(() => {
         fetchPendingUsers();
-    }, []);
+    }, [fetchPendingUsers]);
 
     const getRoleIcon = (role: string) => {
         switch (role) {

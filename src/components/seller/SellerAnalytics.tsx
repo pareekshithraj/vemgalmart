@@ -1,16 +1,48 @@
-import { TrendingUp, Users, ShoppingBag, DollarSign, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { TrendingUp, Users, ShoppingBag, DollarSign, ArrowUpRight, ArrowDownRight, Loader2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import api from '../../lib/api';
 
 export function SellerAnalytics() {
+    const [isLoading, setIsLoading] = useState(true);
+    const [analyticsData, setAnalyticsData] = useState<any>(null);
+
+    useEffect(() => {
+        const fetchAnalytics = async () => {
+            try {
+                const response = await api.get('/analytics/seller');
+                setAnalyticsData(response.data);
+            } catch (error) {
+                console.error("Failed to fetch seller analytics", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchAnalytics();
+    }, []);
+
+    if (isLoading) {
+        return (
+            <div className="h-64 flex items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+        );
+    }
+
+    if (!analyticsData) return null;
+
+    const { metrics, salesData, topProducts } = analyticsData;
+
     const stats = [
-        { label: 'Total Revenue', value: '₹45,231', change: '+20.1%', trend: 'up', icon: DollarSign, color: 'text-green-600', bg: 'bg-green-50' },
-        { label: 'Active Orders', value: '12', change: '+4', trend: 'up', icon: ShoppingBag, color: 'text-blue-600', bg: 'bg-blue-50' },
-        { label: 'Total Customers', value: '2,345', change: '+18.2%', trend: 'up', icon: Users, color: 'text-purple-600', bg: 'bg-purple-50' },
-        { label: 'Avg. Order Value', value: '₹450', change: '-4.3%', trend: 'down', icon: TrendingUp, color: 'text-orange-600', bg: 'bg-orange-50' },
+        { label: 'Total Revenue', value: `₹${metrics.totalRevenue.toLocaleString()}`, change: '+0%', trend: 'up', icon: DollarSign, color: 'text-green-600', bg: 'bg-green-50' },
+        { label: 'Active Orders', value: metrics.activeOrders.toString(), change: '+0', trend: 'up', icon: ShoppingBag, color: 'text-blue-600', bg: 'bg-blue-50' },
+        { label: 'Total Customers', value: metrics.totalCustomers.toString(), change: '+0%', trend: 'up', icon: Users, color: 'text-purple-600', bg: 'bg-purple-50' },
+        { label: 'Avg. Order Value', value: `₹${Math.round(metrics.avgOrderValue).toLocaleString()}`, change: '-0%', trend: 'down', icon: TrendingUp, color: 'text-orange-600', bg: 'bg-orange-50' },
     ];
 
-    // Mock Chart Data Bars
-    const weeklySales = [40, 65, 35, 80, 55, 90, 45];
-    const maxSale = Math.max(...weeklySales);
+    // Chart Data
+    const weeklySales = salesData.map((d: any) => d.revenue);
+    const maxSale = Math.max(...weeklySales, 100); // minimum 100 to avoid div by 0
 
     return (
         <div className="space-y-6 animate-fade-in">
@@ -46,18 +78,18 @@ export function SellerAnalytics() {
                     </div>
 
                     <div className="h-64 flex items-end justify-between gap-4 px-4">
-                        {weeklySales.map((val, i) => (
+                        {salesData.map((data: any, i: number) => (
                             <div key={i} className="flex-1 flex flex-col items-center gap-2 group">
                                 <div
                                     className="w-full bg-primary/10 rounded-t-xl relative group-hover:bg-primary/20 transition-colors"
-                                    style={{ height: `${(val / maxSale) * 100}%` }}
+                                    style={{ height: `${(data.revenue / maxSale) * 100}%` }}
                                 >
                                     <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                                        ₹{val * 100}
+                                        ₹{data.revenue.toLocaleString()}
                                     </div>
                                 </div>
                                 <span className="text-xs font-medium text-gray-400">
-                                    {['M', 'T', 'W', 'T', 'F', 'S', 'S'][i]}
+                                    {data.name.charAt(0)}
                                 </span>
                             </div>
                         ))}
@@ -68,22 +100,29 @@ export function SellerAnalytics() {
                 <div className="p-6 bg-white rounded-3xl border border-gray-100 shadow-sm">
                     <h3 className="text-lg font-bold text-gray-900 mb-6">Top Products</h3>
                     <div className="space-y-4">
-                        {[1, 2, 3].map((i) => (
-                            <div key={i} className="flex items-center gap-4">
-                                <div className="h-12 w-12 rounded-xl bg-gray-100 overflow-hidden">
-                                    <img
-                                        src={`https://images.unsplash.com/photo-${i === 1 ? '1603833665858-e61d17a86224' : i === 2 ? '1509440159596-0249088772ff' : '1550583724-b2692b85b150'}?w=200&h=200&fit=crop`}
-                                        alt="Product"
-                                        className="h-full w-full object-cover"
-                                    />
+                        {topProducts.length === 0 ? (
+                            <p className="text-sm text-gray-500">No product sales yet.</p>
+                        ) : (
+                            topProducts.map((product: any) => (
+                                <div key={product.id} className="flex items-center gap-4">
+                                    <div className="h-12 w-12 rounded-xl bg-gray-100 overflow-hidden">
+                                        <img
+                                            src={product.image}
+                                            alt={product.name}
+                                            className="h-full w-full object-cover"
+                                        />
+                                    </div>
+                                    <div className="flex-1">
+                                        <h4 className="font-semibold text-gray-900 text-sm line-clamp-1">{product.name}</h4>
+                                        <p className="text-xs text-gray-500">{product.totalSales} sales</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <span className="font-bold text-gray-900 text-sm block">₹{product.price}</span>
+                                        <span className="text-xs text-green-600 font-semibold text-right">₹{product.revenue} made</span>
+                                    </div>
                                 </div>
-                                <div className="flex-1">
-                                    <h4 className="font-semibold text-gray-900 text-sm">Vital Essentials</h4>
-                                    <p className="text-xs text-gray-500">124 sales</p>
-                                </div>
-                                <span className="font-bold text-gray-900 text-sm">₹450</span>
-                            </div>
-                        ))}
+                            ))
+                        )}
                     </div>
                     <button className="w-full mt-6 py-2 text-sm font-semibold text-primary hover:bg-primary/5 rounded-xl transition-colors">
                         View All Products

@@ -44,8 +44,9 @@ export const LoginPage = () => {
             else if (data.user.role === 'ADMIN') navigate('/admin');
             else navigate('/');
 
-        } catch (error: any) {
-            addToast(error.response?.data?.message || 'Login failed', 'error');
+        } catch (error) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            addToast((error as any).response?.data?.message || 'Login failed', 'error');
         } finally {
             setIsLoading(false);
         }
@@ -89,6 +90,7 @@ export const LoginPage = () => {
                                     name="email"
                                     type="text"
                                     required
+                                    autoComplete="email"
                                     className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-gray-50 focus:bg-white"
                                     placeholder="you@example.com or +91..."
                                     value={formData.email}
@@ -117,6 +119,7 @@ export const LoginPage = () => {
                                     name="password"
                                     type="password"
                                     required
+                                    autoComplete="current-password"
                                     className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-gray-50 focus:bg-white"
                                     placeholder="••••••••"
                                     value={formData.password}

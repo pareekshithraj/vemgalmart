@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useStore } from '../store/useStore';
 import { useSocket } from '../hooks/useSocket';
 import { useToast } from '../context/ToastContext';
 import { MainLayout } from '../components/layout/MainLayout';
 import { AddProductForm } from '../components/seller/AddProductForm';
+import { EditProductModal } from '../components/seller/EditProductModal';
 import { SellerAnalytics } from '../components/seller/SellerAnalytics';
 import { Badge } from '../components/ui/Badge';
 import { CheckCircle, LayoutDashboard, Package, ShoppingBag } from 'lucide-react';
@@ -11,27 +12,31 @@ import { Button } from '../components/ui/Button';
 import api from '../lib/api';
 
 import { useAuthStore } from '../store/useAuthStore';
+import type { Product } from '../types';
 
 export function SellerDashboard() {
-    const { products, orders, updateOrderStatus, setOrders } = useStore();
+    const { products, orders, updateOrderStatus, setOrders, fetchProducts } = useStore();
     const { user } = useAuthStore();
     const [activeTab, setActiveTab] = useState<'overview' | 'products' | 'orders'>('overview');
+    const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const socket = useSocket();
     const { addToast } = useToast();
 
-    const fetchOrders = async () => {
+    const fetchOrders = useCallback(async () => {
         try {
             const response = await api.get('/orders/my-orders');
             setOrders(response.data);
-        } catch (error) {
-            console.error('Failed to fetch orders', error);
+        } catch {
+            console.error('Failed to fetch orders');
         }
-    };
+    }, [setOrders]);
 
     useEffect(() => {
         fetchOrders();
+        fetchProducts(); // Ensure products are loaded if App.tsx missed them during server restart
 
         if (socket) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             socket.on('new_order', (order: any) => {
                 addToast(`New order received! #${order.id}`, 'success');
                 fetchOrders();
@@ -48,13 +53,63 @@ export function SellerDashboard() {
                 socket.off('order_status_updated');
             }
         };
-    }, [socket, addToast]);
+    }, [socket, addToast, fetchOrders, fetchProducts]);
 
     // Filter products by current seller
     const myProducts = products.filter(p => p.sellerId === user?.id);
 
     // Filter pending orders
     const pendingOrders = orders.filter(o => o.status === 'pending' || o.status === 'preparing');
+
+    if (user?.status === 'PENDING') {
+        return (
+            <MainLayout>
+                <div className="container mx-auto px-4 py-16 flex justify-center mt-[10vh]">
+                    <div className="bg-white p-8 md:p-12 rounded-3xl shadow-xl shadow-gray-200/50 max-w-lg w-full text-center border border-gray-100">
+                        <div className="mx-auto h-20 w-20 bg-yellow-50 rounded-full flex items-center justify-center mb-6">
+                            <CheckCircle className="h-10 w-10 text-yellow-500" />
+                        </div>
+                        <h2 className="text-3xl font-extrabold text-gray-900 mb-4">Approval Requested</h2>
+                        <p className="text-gray-600 mb-8 leading-relaxed">
+                            Thank you for registering as a seller on Vemgal Mart! Your account is currently under review by our admin team. You will be notified once your store is approved.
+                        </p>
+                        <Button
+                            variant="outline"
+                            className="w-full"
+                            onClick={() => window.location.href = '/'}
+                        >
+                            Return to Home
+                        </Button>
+                    </div>
+                </div>
+            </MainLayout>
+        );
+    }
+
+    if (user?.status === 'REJECTED') {
+        return (
+            <MainLayout>
+                <div className="container mx-auto px-4 py-16 flex justify-center mt-[10vh]">
+                    <div className="bg-white p-8 md:p-12 rounded-3xl shadow-xl shadow-gray-200/50 max-w-lg w-full text-center border border-gray-100">
+                        <div className="mx-auto h-20 w-20 bg-red-50 rounded-full flex items-center justify-center mb-6">
+                            <LayoutDashboard className="h-10 w-10 text-red-500" />
+                        </div>
+                        <h2 className="text-3xl font-extrabold text-gray-900 mb-4">Application Rejected</h2>
+                        <p className="text-gray-600 mb-8 leading-relaxed">
+                            Unfortunately, your application to become a seller has been denied by the administration. Please contact support for more details.
+                        </p>
+                        <Button
+                            variant="outline"
+                            className="w-full"
+                            onClick={() => window.location.href = '/support'}
+                        >
+                            Contact Support
+                        </Button>
+                    </div>
+                </div>
+            </MainLayout>
+        );
+    }
 
     return (
         <MainLayout>
@@ -72,7 +127,7 @@ export function SellerDashboard() {
                         ].map((tab) => (
                             <button
                                 key={tab.id}
-                                onClick={() => setActiveTab(tab.id as any)}
+                                onClick={() => setActiveTab(tab.id as 'overview' | 'products' | 'orders')}
                                 className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all ${activeTab === tab.id
                                     ? 'bg-primary text-white shadow-lg shadow-primary/25'
                                     : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
@@ -132,7 +187,7 @@ export function SellerDashboard() {
                                                     <Button
                                                         variant="outline"
                                                         className="flex-1 py-2 text-xs border-gray-200"
-                                                        onClick={() => addToast('Edit functionality coming soon!', 'info')}
+                                                        onClick={() => setEditingProduct(product)}
                                                     >
                                                         Edit
                                                     </Button>
@@ -145,7 +200,7 @@ export function SellerDashboard() {
                                                                     const { deleteProduct } = useStore.getState();
                                                                     await deleteProduct(product.id);
                                                                     addToast('Product deleted successfully', 'success');
-                                                                } catch (err) {
+                                                                } catch {
                                                                     addToast('Failed to delete product', 'error');
                                                                 }
                                                             }
@@ -218,6 +273,13 @@ export function SellerDashboard() {
                     </div>
                 )}
             </div>
+
+            {editingProduct && (
+                <EditProductModal
+                    product={editingProduct!}
+                    onClose={() => setEditingProduct(null)}
+                />
+            )}
         </MainLayout >
     );
 }

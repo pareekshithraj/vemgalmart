@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../lib/api';
 import { Button } from '../ui/Button';
-import { Pencil, Trash2, Plus, X, Upload } from 'lucide-react';
+import { Pencil, Trash2, Plus, Upload } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Input } from '../ui/Input';
 

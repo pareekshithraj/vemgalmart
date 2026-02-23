@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { X, Home, Briefcase } from 'lucide-react';
+import PlacesAutocomplete, {
+    geocodeByAddress,
+} from 'react-places-autocomplete';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { useToast } from '../../context/ToastContext';
@@ -8,6 +11,7 @@ interface AddressFormModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSuccess: () => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     initialData?: any;
 }
 
@@ -60,6 +64,43 @@ export function AddressFormModal({ isOpen, onClose, onSuccess, initialData }: Ad
         }
     }, [initialData, isOpen]);
 
+    const handleSelect = async (val: string) => {
+        setFormData({ ...formData, street: val });
+
+        try {
+            const results = await geocodeByAddress(val);
+            if (results && results.length > 0) {
+                const addressComponents = results[0].address_components;
+
+                let zip = '';
+                let city = '';
+                let state = '';
+
+                for (const component of addressComponents) {
+                    if (component.types.includes('postal_code')) {
+                        zip = component.long_name;
+                    }
+                    if (component.types.includes('locality')) {
+                        city = component.long_name;
+                    }
+                    if (component.types.includes('administrative_area_level_1')) {
+                        state = component.long_name;
+                    }
+                }
+
+                setFormData(prev => ({
+                    ...prev,
+                    street: val,
+                    pincode: zip || prev.pincode,
+                    city: city || prev.city,
+                    state: state || prev.state
+                }));
+            }
+        } catch (error) {
+            console.error('Error getting geocode:', error);
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
@@ -101,8 +142,9 @@ export function AddressFormModal({ isOpen, onClose, onSuccess, initialData }: Ad
             addToast(initialData ? 'Address updated successfully' : 'Address added successfully', 'success');
             onSuccess();
             onClose();
-        } catch (error: any) {
-            addToast(error.message, 'error');
+        } catch (error) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            addToast((error as any).message, 'error');
         } finally {
             setIsLoading(false);
         }
@@ -179,13 +221,49 @@ export function AddressFormModal({ isOpen, onClose, onSuccess, initialData }: Ad
                         />
                     </div>
 
-                    <Input
-                        label="Street / Building / Landmark"
-                        placeholder="#123, Main Road"
+                    <PlacesAutocomplete
                         value={formData.street}
-                        onChange={(e) => setFormData({ ...formData, street: e.target.value })}
-                        required
-                    />
+                        onChange={(val) => setFormData({ ...formData, street: val })}
+                        onSelect={handleSelect}
+                    >
+                        {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
+                            <div className="relative">
+                                <Input
+                                    label="Street / Building / Landmark"
+                                    {...getInputProps({
+                                        placeholder: 'Search Places ...',
+                                        className: 'location-search-input',
+                                    })}
+                                    required
+                                />
+                                <div className="absolute z-10 w-full mt-1 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+                                    {loading && <div className="p-3 text-sm text-gray-500">Loading...</div>}
+                                    {suggestions.map((suggestion, idx) => {
+                                        const className = suggestion.active
+                                            ? 'p-3 bg-primary/5 text-primary cursor-pointer border-b border-gray-50 text-sm flex items-center gap-2'
+                                            : 'p-3 bg-white text-gray-700 cursor-pointer border-b border-gray-50 hover:bg-gray-50 text-sm flex items-center gap-2';
+
+                                        // Adding a unique key for the mapped elements
+                                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                                        const { key, ...itemProps } = getSuggestionItemProps(suggestion);
+                                        return (
+                                            <div
+                                                key={idx}
+                                                {...itemProps}
+                                                className={className}
+                                            >
+                                                <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                </svg>
+                                                <span className="truncate">{suggestion.description}</span>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
+                    </PlacesAutocomplete>
 
                     <div className="grid grid-cols-2 gap-4">
                         <Input

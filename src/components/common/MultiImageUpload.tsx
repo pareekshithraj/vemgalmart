@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Upload, X, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { Upload, X, Loader2 } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';
 import api from '../../lib/api';
 
@@ -87,8 +87,9 @@ export const MultiImageUpload: React.FC<MultiImageUploadProps> = ({
             setPreviews(updatedPreviews);
             onImagesUploaded(updatedPreviews);
             addToast('Images uploaded successfully', 'success');
-        } catch (error: any) {
-            addToast(error.message || 'Upload failed', 'error');
+        } catch (error) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            addToast((error as any).message || 'Upload failed', 'error');
         } finally {
             setIsUploading(false);
             if (fileInputRef.current) {

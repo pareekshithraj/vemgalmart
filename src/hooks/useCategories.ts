@@ -19,9 +19,9 @@ export function useCategories() {
                 const response = await api.get('/categories');
                 setCategories(response.data);
                 setError(null);
-            } catch (err: any) {
+            } catch (err) {
                 console.error('Failed to fetch categories:', err);
-                setError(err.message || 'Failed to load categories');
+                setError(err instanceof Error ? err.message : 'Failed to load categories');
             } finally {
                 setIsLoading(false);
             }

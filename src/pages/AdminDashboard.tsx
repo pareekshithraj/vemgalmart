@@ -12,17 +12,19 @@ import {
     Truck,
     ShoppingBag,
     List,
-    Image
+    Image,
+    Ticket
 } from 'lucide-react';
 import { AdminOverview } from '../components/admin/AdminOverview';
 import { AdminUsers } from '../components/admin/AdminUsers';
 import { AdminApprovals } from '../components/admin/AdminApprovals';
 import { AdminCategories } from '../components/admin/AdminCategories';
 import { AdminBanners } from '../components/admin/AdminBanners';
+import { AdminCoupons } from '../components/admin/AdminCoupons';
 
 export const AdminDashboard = () => {
     const { user, logout } = useAuthStore();
-    const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'approvals' | 'categories' | 'banners'>('overview');
+    const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'approvals' | 'categories' | 'banners' | 'coupons'>('overview');
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     // Redirect if not admin
@@ -35,6 +37,7 @@ export const AdminDashboard = () => {
         { id: 'users', name: 'User Management', icon: Users },
         { id: 'categories', name: 'Categories', icon: List },
         { id: 'banners', name: 'Banners', icon: Image },
+        { id: 'coupons', name: 'Coupons (Promos)', icon: Ticket },
         { id: 'approvals', name: 'Pending Approvals', icon: CheckSquare },
     ];
 
@@ -44,6 +47,7 @@ export const AdminDashboard = () => {
             case 'users': return <AdminUsers />;
             case 'categories': return <AdminCategories />;
             case 'banners': return <AdminBanners />;
+            case 'coupons': return <AdminCoupons />;
             case 'approvals': return <AdminApprovals />;
             default: return <AdminOverview />;
         }
@@ -77,7 +81,7 @@ export const AdminDashboard = () => {
                                 <button
                                     key={item.id}
                                     onClick={() => {
-                                        setActiveTab(item.id as any);
+                                        setActiveTab(item.id as 'overview' | 'users' | 'approvals' | 'categories' | 'banners');
                                         setIsSidebarOpen(false);
                                     }}
                                     className={`

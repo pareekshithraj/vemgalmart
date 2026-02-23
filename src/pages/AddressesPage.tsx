@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { MainLayout } from '../components/layout/MainLayout';
 import { Plus, Home, Briefcase, Trash2, Edit2, Loader2 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
@@ -6,18 +6,31 @@ import { useStore } from '../store/useStore';
 import { AddressFormModal } from '../components/address/AddressFormModal';
 import { useToast } from '../context/ToastContext';
 
+interface Address {
+    id: string;
+    type: string;
+    isDefault: boolean;
+    street: string;
+    village: string;
+    city: string;
+    state: string;
+    pincode: string;
+    phone: string;
+    alternatePhone?: string;
+}
+
 export function AddressesPage() {
-    const [addresses, setAddresses] = useState<any[]>([]);
+    const [addresses, setAddresses] = useState<Address[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [editingAddress, setEditingAddress] = useState<any>(null);
+    const [editingAddress, setEditingAddress] = useState<Address | null>(null);
     const { user } = useStore();
     const { addToast } = useToast();
 
     // We need token from somewhere. Assuming it's in localStorage for now
     const token = localStorage.getItem('token');
 
-    const fetchAddresses = async () => {
+    const fetchAddresses = useCallback(async () => {
         try {
             const response = await fetch('http://localhost:5000/api/user/address', {
                 headers: {
@@ -33,11 +46,11 @@ export function AddressesPage() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [token]);
 
     useEffect(() => {
         fetchAddresses();
-    }, []);
+    }, [fetchAddresses]);
 
     const handleDelete = async (id: string) => {
         if (!confirm('Are you sure you want to delete this address?')) return;
@@ -56,12 +69,12 @@ export function AddressesPage() {
             } else {
                 throw new Error('Failed to delete');
             }
-        } catch (error) {
+        } catch {
             addToast('Failed to delete address', 'error');
         }
     };
 
-    const handleEdit = (address: any) => {
+    const handleEdit = (address: Address) => {
         setEditingAddress(address);
         setIsModalOpen(true);
     };

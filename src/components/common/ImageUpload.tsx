@@ -66,8 +66,9 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({ onImageUploaded, curre
             setPreview(fullUrl);
             onImageUploaded(fullUrl);
             addToast('Image uploaded successfully', 'success');
-        } catch (error: any) {
-            addToast(error.message, 'error');
+        } catch (error) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            addToast((error as any).message, 'error');
         } finally {
             setIsUploading(false);
         }

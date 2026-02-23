@@ -1,9 +1,11 @@
 import { MainLayout } from '../components/layout/MainLayout';
-import { Package, Truck, CheckCircle, Clock, ChevronRight, AlertCircle } from 'lucide-react';
+import { Package, Truck, CheckCircle, Clock, ChevronRight, AlertCircle, ChevronDown, Download } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import api from '../lib/api';
 import { Button } from '../components/ui/Button';
 import { Link } from 'react-router-dom';
+import { OrderTrackingMap } from '../components/orders/OrderTrackingMap';
+import { generateInvoice } from '../utils/generateInvoice';
 
 interface OrderItem {
     id: string;
@@ -21,6 +23,7 @@ interface Order {
     totalAmount: number;
     createdAt: string;
     deliveryAddress: string;
+    proofOfDeliveryImage?: string;
     items: OrderItem[];
 }
 
@@ -28,6 +31,7 @@ export function OrdersPage() {
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -117,14 +121,24 @@ export function OrdersPage() {
                                             </p>
                                         </div>
                                     </div>
-                                    <div className={`px-3 py-1 rounded-full text-xs font-semibold border capitalize flex items-center gap-1.5 ${getStatusColor(order.status)}`}>
-                                        {order.status === 'PREPARING' && (
-                                            <span className="relative flex h-2 w-2">
-                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                                                <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
-                                            </span>
-                                        )}
-                                        {order.status}
+                                    <div className="flex flex-col items-end gap-2">
+                                        <div className={`px-3 py-1 rounded-full text-xs font-semibold border capitalize flex items-center gap-1.5 ${getStatusColor(order.status)}`}>
+                                            {order.status === 'PREPARING' && (
+                                                <span className="relative flex h-2 w-2">
+                                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                                                </span>
+                                            )}
+                                            {order.status}
+                                        </div>
+                                        <button
+                                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                            onClick={(e) => { e.stopPropagation(); generateInvoice({ ...order, total: order.totalAmount } as any); }}
+                                            className="flex items-center gap-1.5 text-xs font-medium text-primary hover:text-indigo-800 transition-colors bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-100"
+                                            title="Download PDF Invoice"
+                                        >
+                                            <Download className="w-3.5 h-3.5" /> Invoice
+                                        </button>
                                     </div>
                                 </div>
 
@@ -138,14 +152,52 @@ export function OrdersPage() {
                                 </div>
                             </div>
 
-                            <div className="bg-gray-50 px-6 py-4 flex items-center justify-between border-t border-gray-100">
+                            <div
+                                className="bg-gray-50 px-6 py-4 flex items-center justify-between border-t border-gray-100 cursor-pointer hover:bg-gray-100 transition-colors"
+                                onClick={() => setExpandedOrderId(expandedOrderId === order.id ? null : order.id)}
+                            >
                                 <span className="text-sm text-gray-500 max-w-[70%] truncate">
                                     Delivery: <b>{order.deliveryAddress}</b>
                                 </span>
-                                <button className="text-primary font-semibold text-sm flex items-center hover:underline">
-                                    View Details <ChevronRight className="h-4 w-4 ml-1" />
+                                <button className="text-primary font-semibold text-sm flex items-center">
+                                    {expandedOrderId === order.id ? 'Hide Tracking' : 'View Tracking'}
+                                    {expandedOrderId === order.id ? <ChevronDown className="h-4 w-4 ml-1" /> : <ChevronRight className="h-4 w-4 ml-1" />}
                                 </button>
                             </div>
+
+                            {/* Expanded Tracking Section */}
+                            {expandedOrderId === order.id && (
+                                <div className="p-6 border-t border-gray-100 bg-white">
+                                    {order.status === 'OUT_FOR_DELIVERY' || order.status === 'PICKED_UP' ? (
+                                        <OrderTrackingMap orderId={order.id} deliveryAddress={order.deliveryAddress} />
+                                    ) : order.status === 'DELIVERED' && order.proofOfDeliveryImage ? (
+                                        <div className="bg-green-50 rounded-2xl p-6 text-center border border-green-100 flex flex-col items-center">
+                                            <div className="p-3 bg-green-100 text-green-600 rounded-full mb-4">
+                                                <CheckCircle className="h-8 w-8" />
+                                            </div>
+                                            <h4 className="text-lg font-bold text-gray-900 mb-1">Delivered Successfully</h4>
+                                            <p className="text-gray-600 mb-6 font-medium">Here is your proof of delivery:</p>
+                                            <div className="rounded-xl overflow-hidden border-4 border-white shadow-lg w-full max-w-sm">
+                                                <img
+                                                    src={order.proofOfDeliveryImage}
+                                                    alt="Proof of Delivery"
+                                                    className="w-full h-auto object-cover"
+                                                />
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="bg-blue-50/50 rounded-2xl p-6 text-center">
+                                            <Truck className="h-8 w-8 text-blue-400 mx-auto mb-3 opacity-50" />
+                                            <p className="text-gray-600 font-medium">Live Tracking is unavailable right now.</p>
+                                            <p className="text-sm text-gray-500 mt-1">
+                                                {order.status === 'DELIVERED'
+                                                    ? 'This order has been successfully delivered.'
+                                                    : 'The map will automatically appear here once your order is Out For Delivery.'}
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     ))}
                 </div>

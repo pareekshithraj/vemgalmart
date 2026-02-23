@@ -22,6 +22,7 @@ export interface Product {
     category: string;
     sellerId: string;
     brand?: string;
+    reviews?: { rating: number }[];
     seller?: {
         id: string;
         name: string;
@@ -38,7 +39,7 @@ export interface Order {
     id: string;
     items: CartItem[];
     total: number;
-    status: 'pending' | 'preparing' | 'ready_for_pickup' | 'picked_up' | 'delivered';
+    status: 'pending' | 'preparing' | 'ready_for_pickup' | 'picked_up' | 'out_for_delivery' | 'delivered';
     customerName: string;
     deliveryAddress: string;
     deliveryManId?: string; // assigned delivery man
@@ -49,7 +50,8 @@ export interface User {
     id: string;
     name: string;
     role: UserRole;
-    email: string; // Added to match backend
+    email: string;
     avatar?: string;
     phone?: string;
+    status?: 'PENDING' | 'APPROVED' | 'REJECTED' | 'SUSPENDED';
 }

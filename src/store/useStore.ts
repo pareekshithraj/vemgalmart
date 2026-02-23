@@ -7,6 +7,7 @@ interface StoreState {
     products: Product[];
     cart: CartItem[];
     orders: Order[];
+    wishlist: Product[];
     searchQuery: string;
     selectedCategory: string | null;
 
@@ -14,22 +15,27 @@ interface StoreState {
     setSearchQuery: (query: string) => void;
     setSelectedCategory: (category: string | null) => void;
     setOrders: (orders: Order[]) => void;
+    setProducts: (products: Product[]) => void;
     fetchBanners: () => Promise<void>;
     fetchProducts: () => Promise<void>;
     fetchCart: () => Promise<void>;
+    fetchWishlist: () => Promise<void>;
+    toggleWishlist: (productId: string) => Promise<void>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     addProduct: (productData: any) => Promise<Product>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    updateProduct: (productId: string, productData: any) => Promise<Product>;
     deleteProduct: (productId: string) => Promise<void>;
     addToCart: (product: Product) => Promise<void>;
     removeFromCart: (productId: string) => Promise<void>;
     updateCartQuantity: (productId: string, quantity: number) => Promise<void>;
     clearCart: () => Promise<void>;
     placeOrder: (order: Order) => void;
-    updateOrderStatus: (orderId: string, status: string) => Promise<void>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    updateOrderStatus: (orderId: string, status: string, extraData?: any) => Promise<void>;
     assignDeliveryMan: (orderId: string, deliveryManId: string) => Promise<void>;
     reset: () => void;
 }
-
-// Mock Data removed
 
 export const useStore = create<StoreState>((set, get) => ({
     user: null, // Managed by useAuthStore
@@ -37,12 +43,14 @@ export const useStore = create<StoreState>((set, get) => ({
     products: [],
     cart: [],
     orders: [],
+    wishlist: [],
     searchQuery: '',
     selectedCategory: null,
 
     setSearchQuery: (query) => set({ searchQuery: query }),
     setSelectedCategory: (category) => set({ selectedCategory: category }),
     setOrders: (orders) => set({ orders }),
+    setProducts: (products) => set({ products }),
 
     fetchBanners: async () => {
         try {
@@ -70,6 +78,32 @@ export const useStore = create<StoreState>((set, get) => ({
         }
     },
 
+    fetchWishlist: async () => {
+        try {
+            const response = await import('../lib/api').then(m => m.default.get('/wishlist'));
+            set({ wishlist: response.data });
+        } catch (error) {
+            console.error('Failed to fetch wishlist:', error);
+        }
+    },
+
+    toggleWishlist: async (productId: string) => {
+        const state = get();
+        const inWishlist = state.wishlist.some(p => p.id === productId);
+        try {
+            if (inWishlist) {
+                await import('../lib/api').then(m => m.default.delete(`/wishlist/${productId}`));
+                set({ wishlist: state.wishlist.filter(p => p.id !== productId) });
+            } else {
+                await import('../lib/api').then(m => m.default.post('/wishlist', { productId }));
+                await state.fetchWishlist();
+            }
+        } catch (error) {
+            console.error('Failed to toggle wishlist:', error);
+        }
+    },
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     addProduct: async (productData: any) => {
         try {
             const response = await import('../lib/api').then(m => m.default.post('/products', productData));
@@ -77,6 +111,20 @@ export const useStore = create<StoreState>((set, get) => ({
             return response.data.product;
         } catch (error) {
             console.error('Failed to add product:', error);
+            throw error;
+        }
+    },
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    updateProduct: async (productId: string, productData: any) => {
+        try {
+            const response = await import('../lib/api').then(m => m.default.put(`/products/${productId}`, productData));
+            set((state) => ({
+                products: state.products.map(p => p.id === productId ? { ...p, ...response.data.product } : p)
+            }));
+            return response.data.product;
+        } catch (error) {
+            console.error('Failed to update product:', error);
             throw error;
         }
     },
@@ -97,6 +145,7 @@ export const useStore = create<StoreState>((set, get) => ({
         try {
             const response = await import('../lib/api').then(m => m.default.get('/cart'));
             if (response.data && response.data.items) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const mappedCart = response.data.items.map((item: any) => ({
                     ...item.product,
                     quantity: item.quantity,
@@ -104,15 +153,17 @@ export const useStore = create<StoreState>((set, get) => ({
                 }));
                 set({ cart: mappedCart });
             }
-        } catch (error) {
-            console.error('Failed to fetch cart:', error);
+        } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
+            if (error?.response?.status !== 401) {
+                console.error('Failed to fetch cart:', error);
+            }
         }
     },
 
     addToCart: async (product) => {
         try {
             // Optimistic update
-            const state = get();
+            // const state = get();
             // We can't easily optimistic update 'cartItemId' for new items, so we rely on fetchCart after.
 
             await import('../lib/api').then(m => m.default.post('/cart/add', {
@@ -182,9 +233,10 @@ export const useStore = create<StoreState>((set, get) => ({
         cart: []
     })),
 
-    updateOrderStatus: async (orderId, status) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    updateOrderStatus: async (orderId, status, extraData) => {
         try {
-            await import('../lib/api').then(m => m.default.put(`/orders/${orderId}/status`, { status }));
+            await import('../lib/api').then(m => m.default.put(`/orders/${orderId}/status`, { status, ...extraData }));
             set((state) => ({
                 orders: state.orders.map(o => o.id === orderId ? { ...o, status: status as Order['status'] } : o)
             }));

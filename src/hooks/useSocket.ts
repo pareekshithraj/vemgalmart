@@ -1,25 +1,23 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 
 const SOCKET_URL = 'http://localhost:5000';
 
 export const useSocket = () => {
-    const socketRef = useRef<Socket | null>(null);
+    const [socket] = useState<Socket>(() => {
+        const socketInstance = io(SOCKET_URL);
+        return socketInstance;
+    });
 
     useEffect(() => {
-        // Connect to socket
-        socketRef.current = io(SOCKET_URL);
-
-        socketRef.current.on('connect', () => {
+        socket.on('connect', () => {
             console.log('Connected to socket server');
         });
 
         return () => {
-            if (socketRef.current) {
-                socketRef.current.disconnect();
-            }
+            socket.disconnect();
         };
-    }, []);
+    }, [socket]);
 
-    return socketRef.current;
+    return socket;
 };
